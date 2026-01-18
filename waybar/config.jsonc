@@ -1,0 +1,70 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 42,
+    "margin-top": 10,
+    "margin-left": 20,
+    "margin-right": 20,
+    "spacing": 4,
+
+    // Modules Layout
+    "modules-left": ["custom/logo", "clock"],
+    "modules-center": ["hyprland/workspaces"],
+    "modules-right": ["cpu", "memory", "pulseaudio", "network", "tray"],
+
+    // Module Configurations
+    "custom/logo": {
+        "format": "󰣇",
+        "on-click": "wlogout -b 3 -L 1800 -R 1800 -T 1000 -B 1000",
+        "tooltip": false
+    },
+
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "on-click": "activate",
+        "format-icons": {
+            "active": "<span color='#8ccf7e'>󰄛</span>",   // Everblush Green
+            "urgent": "<span color='#e57474'>󰄛</span>",   // Everblush Red
+            "default": "<span color='#676e95'>󰄛</span>"   // Everblush Gray
+	}
+    },
+
+    "clock": {
+        "format": "{:%H:%M 󰃭 :%A, %B %d, %Y}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>"
+    },
+
+    "cpu": {
+        "format": "  {usage}%",
+        "interval": 2
+    },
+
+    "memory": {
+        "format": "  {used}GB",
+        "interval": 5
+    },
+
+    "pulseaudio": {
+        "format": "{icon}  {volume}%",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "pavucontrol"
+    },
+
+   "network": {
+    // Icons change based on signal strength
+    "format-wifi": "{icon}  {signalStrength}%",
+    "format-ethernet": "󰈀  wired",
+    "format-disconnected": "󰤮",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "tooltip-format": "{essid} - {ipaddr}\nStrength: {signalStrength}%",
+    "on-click": "nm-connection-editor"
+    },
+
+     "tray": {
+        "icon-size": 18,
+        "spacing": 10
+    }
+}
