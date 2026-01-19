@@ -1,0 +1,178 @@
+;; Simple Everblush Bar
+
+;; Variables
+(defpoll hour :interval "1s" "date +%H")
+(defpoll min  :interval "1s" "date +%M")
+(defpoll bat_icon :interval "5s" "bash $HOME/.config/eww/scripts/battery.sh")
+(defpoll cpu :interval "2s" "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'")
+(defpoll ram :interval "2s" "free | grep Mem | awk '{print ($3/$2 * 100.0)}'")
+(defpoll bat :interval "5s" "cat /sys/class/power_supply/BAT0/capacity || echo 0")
+(defpoll wifi_status :interval "3s" "nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes' | cut -d: -f2")
+(defpoll wifi_list_literal :interval "10s" "bash $HOME/.config/eww/scripts/wifi_list.sh")
+(defpoll wifi_status_widget :interval "3s" "bash $HOME/.config/eww/scripts/wifi.sh")
+(defpoll volume_percent :interval "1s" "pactl get-sink-volume @DEFAULT_SINK@ | grep -Po '[0-9]+(?=%)' | head -n 1")
+(defpoll volume_widget_info :interval "1s" "bash $HOME/.config/eww/scripts/volume.sh")
+(defpoll volume_muted :interval "1s" "pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}'")
+
+(defvar eww_cmd "eww -c $HOME/.config/eww")
+(defvar cal_day "")
+(defvar cal_month "")
+(defvar cal_year "")
+(defvar cpu_reveal false)
+(defvar ram_reveal false)
+(defvar bat_reveal false)
+(defvar calendar_reveal false)
+(defvar auth_ssid "")
+(defvar auth_pass "")
+(defvar auth_error "")
+(defvar vol_reveal false)
+(defvar power_reveal false)
+
+;; --- Dynamic Workspaces ---
+(deflisten workspace_tags "bash $HOME/.config/eww/scripts/get_workspaces.sh")
+
+;; --- Widgets ---
+(defwidget launcher []
+  (eventbox :onhover "${eww_cmd} update power_reveal=true"
+            :onhoverlost "${eww_cmd} update power_reveal=false"
+            :cursor "pointer"
+    (box :orientation "v" :space-evenly false :halign "fill"
+      (button :class "launcher" :onclick "wofi --show drun &" 
+        (label :text "" :xalign 0.5))
+      
+      (revealer :transition "slidedown"
+                :reveal power_reveal
+                :duration "350ms"
+        (box :orientation "v" :class "power-menu" :spacing 15 :halign "fill"
+          (button :class "power-off" :onclick "shutdown -h now" (label :text "" :xalign 0.5))
+          (button :class "reboot"    :onclick "reboot" (label :text "" :xalign 0.5))
+          (button :class "logout"    :onclick "loginctl terminate-user $USER" (label :text "" :xalign 0.5))
+          (button :class "lock"      :onclick "gtklock &" (label :text "" :xalign 0.5)))))))
+
+(defwidget workspaces []
+  (box :class "works-container" :halign "center"
+    (literal :content workspace_tags)))
+
+(defwidget clock []
+  (eventbox :cursor "pointer" 
+            :onclick "eww update cal_day=$(date +%d) cal_month=$(($(date +%m) - 1)) cal_year=$(date +%Y) && eww open --toggle calendar"
+    (box :class "clock" :orientation "v" :valign "end" :halign "fill"
+      (label :class "hour" :text hour :xalign 0.5)
+      (label :class "min" :text min :xalign 0.5))))
+
+(defwidget cal []
+  (box :class "cal-box"
+       :orientation "v"
+       (calendar :class "cal"
+                 :day {cal_day}
+                 :month {cal_month}
+                 :year {cal_year})))
+
+(defwidget volume_control []
+  (eventbox :onhover "${eww_cmd} update vol_reveal=true"
+            :onhoverlost "${eww_cmd} update vol_reveal=false"
+            :onclick "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+	    :cursor "pointer"
+    (box :class "volume-container" :space-evenly false :orientation "v" :halign "fill"
+      (literal :content volume_widget_info)
+      (revealer :transition "slideup"
+                :reveal vol_reveal
+                :duration "300ms"
+        (box :class "volume-slider-box" :halign "center"
+          (scale :class "volume-slider"
+                 :value {volume_muted == "yes" ? 0 : (volume_percent ?: 0)}
+                 :orientation "v"
+                 :flipped true
+                 :max 101
+                 :min 0
+                 :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%"))))))
+
+(defwidget wifi []
+  (eventbox :cursor "pointer" :onclick "${eww_cmd} open --toggle wifi_window" 
+    (box :class "wifi-bar-item" :halign "fill"
+      (literal :content wifi_status_widget))))
+
+(defwidget wifi_auth_form []
+  (box :class "auth-card" :orientation "v" :space-evenly false
+    (label :class "auth-header" :text "Connect to ${auth_ssid}")
+    (revealer :reveal {auth_error != ""} :transition "slidedown"
+      (label :class "auth-error-text" :text auth_error :wrap true))
+    (input :class "auth-input" 
+           :password true 
+           :onchange "eww update auth_pass={}"
+           :onaccept "bash $HOME/.config/eww/scripts/wifi_connect.sh '${auth_ssid}' '${auth_pass}'")
+    (box :class "auth-btns" :spacing 10
+      (button :class "btn-cancel" :onclick "eww close wifi_auth" "Cancel")
+      (button :class "btn-ok" 
+              :onclick "bash $HOME/.config/eww/scripts/wifi_connect.sh '${auth_ssid}' '${auth_pass}'" 
+              "Connect"))))
+
+(defwidget sys_item [icon value reveal var_name color_class]
+  (eventbox :onhover "eww update ${var_name}=true"
+            :onhoverlost "eww update ${var_name}=false"
+    (box :orientation "v" :space-evenly false :class "sys-box" :halign "fill"
+      (label :class color_class :text icon :xalign 0.5)
+      (revealer :transition "slideup"
+                :reveal reveal
+                :duration "350ms"
+        (label :class "sys-text" :text "${round(value ?: 0, 0)}%" :xalign 0.5)))))
+
+(defwidget sysinfo []
+  (box :class "sysinfo" :orientation "v" :space-evenly false :valign "end" :halign "fill"
+    (volume_control)
+    (wifi)
+    (sys_item :icon "" :value cpu :reveal cpu_reveal :var_name "cpu_reveal" :color_class "cpu-icon")
+    (sys_item :icon "󰘚" :value ram :reveal ram_reveal :var_name "ram_reveal" :color_class "ram-icon")
+    (sys_item :icon bat_icon :value bat :reveal bat_reveal :var_name "bat_reveal" :color_class {(bat ?: 0) < 20 ? "bat-low" : "bat-norm"})
+    (clock)))
+
+;; --- Main Layout ---
+(defwidget left_bar_layout []
+  (box :class "main_container" 
+       :orientation "v" 
+       :space-evenly false
+    (box :valign "start" 
+         :orientation "v" 
+         :space-evenly false 
+         :vexpand true 
+         :halign "fill"
+      (launcher)
+      (workspaces))
+    (box :valign "end" 
+         :orientation "v" 
+         :space-evenly false 
+         :halign "fill"
+      (sysinfo))))
+
+;; --- Window Definition ---
+(defwindow bar [screen height]
+  :monitor screen
+  :geometry (geometry :x "20px"
+                      :y "0px" 
+                      :width "50px" 
+                      :height height    
+                      :anchor "left center")
+  :stacking "fg"
+  :exclusive true
+  :namespace "eww-bar"
+  (left_bar_layout))
+
+(defwindow calendar
+  :monitor 0
+  :geometry (geometry :x "20px" :y "20px" :anchor "bottom left")
+  :stacking "fg"
+  (cal))
+
+(defwindow wifi_window
+  :monitor 0
+  :geometry (geometry :x "20px" :y "20px" :width "250px" :anchor "bottom left")
+  :stacking "fg"
+  (box :class "wifi-window-container"
+    (literal :content wifi_list_literal)))
+
+(defwindow wifi_auth
+  :monitor 0
+  :focusable true
+  :geometry (geometry :x "290px" :y "20px" :width "300px" :anchor "bottom left")
+  :stacking "fg"
+  (wifi_auth_form))
