@@ -24,17 +24,35 @@ require("lazy").setup({
       vim.cmd.colorscheme("everblush")
     end,
   },
-
+  -- LSP
+  {
+    "williamboman/mason.nvim",
+    build = ":MasonUpdate",
+    config = true,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = { "lua_ls", "pyright", "bashls" },
+    },
+  },
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      local lspconfig = require("lspconfig")
+      lspconfig.lua_ls.setup({})
+      lspconfig.pyright.setup({})
+      lspconfig.bashls.setup({})
+    end,
+  },
   -- outline
   {
   "hedyhli/outline.nvim",
   config = function()
-    -- Example mapping to toggle outline
     vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>",
       { desc = "Toggle Outline" })
 
     require("outline").setup {
-      -- Your setup opts here (leave empty to use defaults)
     }
   end,
 },
@@ -99,7 +117,7 @@ require("lazy").setup({
 
   -- Fugitive
   { "tpope/vim-fugitive" },
-}) -- FIXED: Added missing closing bracket and parenthesis
+}) 
 
 -- 4. General Settings
 vim.opt.number = true
@@ -109,7 +127,10 @@ vim.opt.termguicolors = true
 -- 5. Keymaps
 vim.keymap.set('n', '<C-h>', ':NvimTreeFocus<CR>', { silent = true })
 vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { silent = true })
-
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = "Go to Definition" })
+vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = "Hover Docs" })
+vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Rename Symbol" })
+vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = "Code Action" })
 -- Auto-close/Quit logic for NvimTree
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "NvimTree",
