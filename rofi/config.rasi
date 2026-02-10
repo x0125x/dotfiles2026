@@ -10,13 +10,9 @@ configuration {
 }
 
 @theme "/dev/null"
+@import "~/.config/rofi/colors.rasi"
 
 * {
-    bg: #141b1e;
-    bg-alt: #232a2d;
-    fg: #dadada;
-    accent: #6cbfbf;
-
     background-color: transparent;
     text-color: @fg;
     margin: 0;
@@ -26,7 +22,7 @@ configuration {
 window {
     width: 800px;
     border: 2px;
-    border-color: @bg-alt;
+    border-color: @lbg;
     background-color: @bg;
     /* Rounded Edges */
     border-radius: 20px; 
@@ -38,7 +34,7 @@ mainbox {
 }
 
 inputbar {
-    background-color: @bg-alt;
+    background-color: @lbg;
     border-radius: 12px;
     padding: 12px;
     margin: 0 0 15px 0;
@@ -52,7 +48,7 @@ prompt {
 
 entry {
     placeholder: "Search...";
-    placeholder-color: #505a5f;
+    placeholder-color: @red;
 }
 
 listview {
@@ -68,7 +64,7 @@ element {
 }
 
 element selected {
-    background-color: @bg-alt;
+    background-color: @lbg;
     text-color: @accent;
 }
 

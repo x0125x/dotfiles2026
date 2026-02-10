@@ -1,15 +1,4 @@
-// Everblush Palette
-$bg:         #141b1e;
-$fg:         #dadada;
-$bg_alt:      #232a2d;
-$red:        #e57474;
-$green:      #8ccf7e;
-$yellow:     #e5c76b;
-$blue:       #67b0e8;
-$magenta:    #c47fd5;
-$cyan:       #6cbfbf;
-$white:      #b3b9b8;
-$selection:  #2d3437;
+@import "colors"
 
 * { 
   all: unset; 
@@ -20,22 +9,22 @@ $selection:  #2d3437;
 
 .main_container {
     background: $bg;
-    border: 4px solid $bg_alt;
+    border: 4px solid $lbg;
     padding: 10px 0px; 
     border-radius: 10px;
 }
 
 .launcher {
     font-size: 24px;
-    color: $cyan;
+    color: $accent;
     margin-bottom: 20px;
     transition: 200ms;
     min-width: 42px; /* Centers the icon button in the 50px bar */
-    &:hover { color: white; }
+    &:hover { color: $white; }
 }
 
 .power-menu {
-    background-color: $bg_alt;
+    background-color: $lbg;
     border-radius: 10px;
     padding: 10px 0;
     margin: 0 4px 20px 4px;
@@ -45,10 +34,10 @@ $selection:  #2d3437;
         transition: 200ms;
         min-width: 42px;
         
-        &.power-off { color: $red; &:hover { color: white; } }
-        &.reboot    { color: $yellow; &:hover { color: white; } }
-        &.logout    { color: $magenta; &:hover { color: white; } }
-        &.lock      { color: $blue; &:hover { color: white; } }
+        &.power-off { color: $red; &:hover { color: $white; } }
+        &.reboot    { color: $yellow; &:hover { color: $white; } }
+        &.logout    { color: $magenta; &:hover { color: $white; } }
+        &.lock      { color: $blue; &:hover { color: $white; } }
     }
 }
 
@@ -56,22 +45,22 @@ $selection:  #2d3437;
     color: $fg;
     font-size: 16px;
     padding: 5px;
-    &:hover { color: $cyan; background: $bg_alt}
+    &:hover { color: $accent; background: $lbg}
 }
 
 .works {
     button {
         font-size: 18px;
         transition: 200ms;
-        &.ws-active { color: $cyan; margin: 5px 0px; }
-        &.ws-occupied { color: $white; margin: 5px 0px; &:hover { color: $cyan; } }
-        &.ws-empty { color: $white; margin: 5px 0px; &:hover { color: $cyan; } }
+        &.ws-active { color: $accent; margin: 5px 0px; }
+        &.ws-occupied { color: $white; margin: 5px 0px; &:hover { color: $accent; } }
+        &.ws-empty { color: $white; margin: 5px 0px; &:hover { color: $accent; } }
     }
 }
 
 .cal-box {
     background-color: $bg;
-    border: 4px solid $bg_alt;
+    border: 4px solid $lbg;
     border-radius: 10px;
     padding: 10px;
 }
@@ -80,9 +69,9 @@ calendar {
     font-size: 14px;
     color: $fg;
     padding: 5px;
-    &:selected { color: $cyan; background-color: $bg_alt; border-radius: 5px; }
+    &:selected { color: $accent; background-color: $lbg; border-radius: 5px; }
     &.header { color: $magenta; font-weight: bold; }
-    &.button { color: $white; &:hover { color: $cyan; } }
+    &.button { color: $white; &:hover { color: $accent; } }
     &.highlight { color: $yellow; }
 }
 
@@ -91,7 +80,7 @@ calendar {
   min-width: 42px;
   
   .cpu-icon { color: $magenta; font-size: 22px; }
-  .ram-icon { color: $cyan; font-size: 22px; }
+  .ram-icon { color: $accent; font-size: 22px; }
   .bat-norm { color: $green; font-size: 22px; }
   .bat-low  { color: $red; font-size: 22px; }
   
@@ -106,29 +95,29 @@ calendar {
 .clock {
     font-size: 18px;
     font-weight: 900;
-    background-color: $bg_alt;
+    background-color: $lbg;
     border-radius: 10px;
     padding: 10px 0px; /* Zero horizontal padding for true center */
     margin: 10px 4px;
     
     .hour, .min { min-width: 42px; }
     .hour { color: $fg; }
-    .min { color: $cyan; }
+    .min { color: $accent; }
 }
 
 .wifi-window-container {
     background-color: $bg;
-    border: 4px solid $bg_alt;
+    border: 4px solid $lbg;
     border-radius: 10px;
 }
 
 .wifi-item, .wifi-active {
     border-radius: 5px;
     margin-bottom: 5px;
-    &:hover { background-color: $bg_alt; }
+    &:hover { background-color: $lbg; }
 }
 
-.wifi-active { color: $cyan; background-color: $bg_alt; }
+.wifi-active { color: $accent; background-color: $lbg; }
 .wifi-icon { font-size: 18px; margin: 5px; }
 .wifi-bar-item { font-size: 18px; padding: 5px; min-width: 42px; }
 
@@ -138,36 +127,36 @@ calendar {
 
 .auth-card {
     background-color: $bg;
-    border: 4px solid $bg_alt;
+    border: 4px solid $lbg;
     border-radius: 10px;
     padding: 20px;
 }
 
-.auth-header { color: $cyan; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+.auth-header { color: $accent; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
 
 .auth-input {
-    background-color: $bg_alt;
+    background-color: $lbg;
     color: $fg;
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 20px;
-    border: 2px solid $selection;
-    &:focus { border-color: $cyan; }
+    border: 2px solid $magenta;
+    &:focus { border-color: $accent; }
 }
 
 .auth-error-text { color: $red; font-size: 12px; margin-bottom: 10px; font-style: italic; }
 
 .auth-btns {
     button { padding: 8px 15px; border-radius: 5px; font-weight: bold; }
-    .btn-ok { background-color: $cyan; color: $bg; &:hover { background-color: $white; } }
-    .btn-cancel { background-color: $bg_alt; color: $white; &:hover { background-color: $red; } }
+    .btn-ok { background-color: $accent; color: $bg; &:hover { background-color: $white; } }
+    .btn-cancel { background-color: $lbg; color: $white; &:hover { background-color: $red; } }
 }
 
 .volume-container { padding: 10px 0; min-width: 42px; }
 .volume-icon { font-size: 20px; color: $blue; }
 .volume-slider-box { padding: 5px 0; min-height: 100px; }
 
-scale.volume-slider trough { background-color: $bg_alt; border-radius: 5px; min-width: 6px; }
+scale.volume-slider trough { background-color: $lbg; border-radius: 5px; min-width: 6px; }
 scale.volume-slider highlight { background-color: $blue; border-radius: 5px; }
 
 .vol-muted { color: $red; font-size: 20px; }
